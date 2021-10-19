@@ -14,11 +14,11 @@ const styleFilter = objects => key => objects[key].type === 'style';
 const scriptFilter = objects => key => objects[key].type === 'script';
 const objectFilter = (objects, typeFilter) => {
   return Object.keys(objects).
-      filter(typeFilter(objects)).
-      reduce((obj, key) => {
-        obj[key] = JSON.parse(JSON.stringify(objects[key]));
-        return obj;
-      }, {});
+  filter(typeFilter(objects)).
+  reduce((obj, key) => {
+    obj[key] = JSON.parse(JSON.stringify(objects[key]));
+    return obj;
+  }, {});
 };
 
 module.exports = function(exports, config) {
@@ -28,7 +28,7 @@ module.exports = function(exports, config) {
 
   const fs = require('fs');
   const gulp = require('gulp');
-  const sass = require('gulp-sass');
+  const sass = require('gulp-dart-sass');
   const sourcemap = require('gulp-sourcemaps');
   const postcss = require('gulp-postcss');
   const plumber = require('gulp-plumber');
@@ -83,10 +83,10 @@ module.exports = function(exports, config) {
         resolver = resolver.then(
             new Promise((resolve, reject) => {
               gulp.src(asset.src).
-                  on('error', reject).
-                  pipe(gulp.dest(asset.dest)).
-                  on('error', reject).
-                  on('end', resolve);
+              on('error', reject).
+              pipe(gulp.dest(asset.dest)).
+              on('error', reject).
+              on('end', resolve);
             }),
         );
       }
@@ -114,20 +114,20 @@ module.exports = function(exports, config) {
           bundle.minify :
           true;
 
-      gulp.src(bundle.files).
-          pipe(gulpif(!deploy, sourcemap.init())).
-          on('error', err).
-          pipe(concat(bundle.name, {newLine: ';\n'})).
-          on('error', err).
-          pipe(gulpif(deploy && bundle.minify, uglify())).
-          on('error', err).
-          pipe(gulpif(deploy && bundle.minify, rename({suffix: '.min'}))).
-          on('error', end).
-          pipe(gulpif(!deploy, sourcemap.write('.'))).
-          on('error', err).
-          pipe(gulp.dest(bundle.path)).
-          on('error', err).
-          on('end', resolve);
+      gulp.src(bundle.files, { allowEmpty: true }).
+      pipe(gulpif(!deploy, sourcemap.init())).
+      on('error', err).
+      pipe(concat(bundle.name, {newLine: ';\n'})).
+      on('error', err).
+      pipe(gulpif(deploy && bundle.minify, uglify())).
+      on('error', err).
+      pipe(gulpif(deploy && bundle.minify, rename({suffix: '.min'}))).
+      on('error', end).
+      pipe(gulpif(!deploy, sourcemap.write('.'))).
+      on('error', err).
+      pipe(gulp.dest(bundle.path)).
+      on('error', err).
+      on('end', resolve);
     });
   }
 
@@ -175,29 +175,29 @@ module.exports = function(exports, config) {
           true;
 
       gulp.src(style.files).
-          pipe(plumber()).
-          on('error', err).
-          pipe(gulpif(!deploy, sourcemap.init())).
-          on('error', err).
-          pipe(gulpif(deploy && style.minify, sass({
-            outputStyle: 'compressed',
-            includePaths: config.includePaths,
-          }))).
-          on('error', err).
-          pipe(gulpif(!deploy || !style.minify, sass({
-            outputStyle: 'nested',
-            includePaths: config.includePaths,
-          }))).
-          on('error', err).
-          pipe(gulpif(deploy, postcss([autoprefixer()]))).
-          on('error', end).
-          pipe(gulpif(deploy && style.minify, rename({suffix: '.min'}))).
-          on('error', end).
-          pipe(gulpif(!deploy, sourcemap.write('.'))).
-          on('error', err).
-          pipe(gulp.dest(style.path)).
-          on('error', err).
-          on('end', resolve);
+      pipe(plumber()).
+      on('error', err).
+      pipe(gulpif(!deploy, sourcemap.init())).
+      on('error', err).
+      pipe(gulpif(deploy && style.minify, sass({
+        outputStyle: 'compressed',
+        includePaths: config.includePaths,
+      }))).
+      on('error', err).
+      pipe(gulpif(!deploy || !style.minify, sass({
+        outputStyle: 'nested',
+        includePaths: config.includePaths,
+      }))).
+      on('error', err).
+      pipe(gulpif(deploy, postcss([autoprefixer()]))).
+      on('error', end).
+      pipe(gulpif(deploy && style.minify, rename({suffix: '.min'}))).
+      on('error', end).
+      pipe(gulpif(!deploy, sourcemap.write('.'))).
+      on('error', err).
+      pipe(gulp.dest(style.path)).
+      on('error', err).
+      on('end', resolve);
     });
   }
 
