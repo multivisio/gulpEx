@@ -185,7 +185,7 @@ module.exports = function(exports, config) {
       }))).
       on('error', err).
       pipe(gulpif(!deploy || !style.minify, sass({
-        outputStyle: 'nested',
+        outputStyle: 'expanded',
         includePaths: config.includePaths,
       }))).
       on('error', err).
